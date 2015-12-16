@@ -1,6 +1,8 @@
 #include "HelloWorldScene.h"
 #include "cocostudio/CocoStudio.h"
 #include "ui/CocosGUI.h"
+#include "fallingObject.h"
+#include "stdio.h"
 
 USING_NS_CC;
 
@@ -35,10 +37,17 @@ bool HelloWorld::init()
 
     addChild(rootNode);
 
+	//Score label.
+	scoreLabel = (Label*)rootNode->getChildByName("scoreLabel");
+	//title Label
+	titleLabel = (Label*)rootNode->getChildByName("titleLabel");
+	titleLabel->setPosition(500, 500);
 
-	gameLive = true;
-	downSpeed = 0;
-	
+	//GameOverLabel
+	gameOverLabel = (Label*)rootNode->getChildByName("GameOverLabel");
+	gameOverLabel->setPosition(-150, -150);
+
+	//sprites
 	bean_1 = (Sprite*)rootNode->getChildByName("bean_1");
 	bean_2 = (Sprite*)rootNode->getChildByName("bean_2");
 	bean_3 = (Sprite*)rootNode->getChildByName("bean_3");
@@ -63,15 +72,63 @@ bool HelloWorld::init()
 	Lives = 3;
 
 	currentSprite = bean_1;
-	downSpeed = 2;
+	currentSprite = randomSprite();
+	Object1 = new fallingObject();
+	Object1->initObject(currentSprite);
+	currentSprite = randomSprite();
+	Object2 = new fallingObject();
+	Object2->initObject(currentSprite);
+	currentSprite = randomSprite();
+	Object3 = new fallingObject();
+	Object3->initObject(currentSprite);
+	currentSprite = randomSprite();
+	Object4 = new fallingObject();
+	Object4->initObject(currentSprite);
+
+	isGameLive = false;
 
 	this->scheduleUpdate();
-	randX = random() % 925 + 35;
+
+	auto winSize = Director::getInstance()->getVisibleSize();
+
+	//Start button.
+	playButton = static_cast<ui::Button*>(rootNode->getChildByName("playButton"));
+	playButton->addTouchEventListener(CC_CALLBACK_2(HelloWorld::PlayButtonPressed, this));
+	playButton->setPosition(Vec2(winSize.width*0.5f, winSize.height*0.5f));
+
     return true;
+
 }
 void HelloWorld::update(float delta)
 {
-	fallingObj();
+		Object1->update();
+		Object2->update();
+		Object3->update();
+		Object4->update();
+	if (isGameLive == true)
+	{
+		if (Object1->Touched)
+		{
+			Object1->Touched = false;
+			LooseLife();
+		}
+		if (Object2->Touched)
+		{
+			Object2->Touched = false;
+			LooseLife();
+		}
+		if (Object3->Touched)
+		{
+			Object3->Touched = false;
+			LooseLife();
+		}
+		if (Object4->Touched)
+		{
+			Object4->Touched = false;
+			LooseLife();
+		}
+	}
+	
 }
 cocos2d::Sprite* HelloWorld::randomSprite()
 {
@@ -158,7 +215,7 @@ cocos2d::Sprite* HelloWorld::randomSprite()
 }
 void HelloWorld::LooseLife()
 {
-	Lives--;
+		Lives--;
 		if (Lives == 2)
 		{
 			Life_1->setPosition(-100, -100);
@@ -172,23 +229,56 @@ void HelloWorld::LooseLife()
 		if (Lives == 0)
 		{
 			Life_3->setPosition(-100, -100);
-			//Call end screen
-			ExitProcess(0); // remove once we have end screen
-
+			EndGame();
+			//ExitProcess(0); 
 		}
+		
 }
-void HelloWorld::fallingObj()
+void HelloWorld::ResetLives()
 {
-	Vec2 CurrPos = currentSprite->getPosition();
-	CurrPos.x = randX;
-	CurrPos.y -= downSpeed;
-	currentSprite->setPosition(CurrPos);
-	if (CurrPos.y < 50)
-	{
-		randX = random() % 925 + 35;
-		currentSprite->setPosition(randX, 700);
-		currentSprite = randomSprite();
-		LooseLife();
+	Life_1->setPosition(740, 30);
+	Life_2->setPosition(820, 30);
+	Life_3->setPosition(900,30);
 
+	Lives = 3;
+}
+void HelloWorld::PlayButtonPressed(Ref *pSender, cocos2d::ui::Widget::TouchEventType type)
+{
+	CCLOG("In touch! %d", type);
+
+	if (type == cocos2d::ui::Widget::TouchEventType::ENDED)
+	{
+		//CCLOG("touch ended.");
+		this->StartGame();
 	}
+	this->StartGame();
+}
+void HelloWorld::StartGame()
+{
+	auto winSize = Director::getInstance()->getVisibleSize();
+
+	isGameLive = true;
+
+	titleLabel->setPosition(-100,-100);
+	gameOverLabel->setPosition(-100, -100);
+
+	ResetLives();
+
+	//Retract start button.
+	auto moveTo = MoveTo::create(0.5, Vec2(-winSize.width*0.5f, winSize.height*0.5f)); 
+	playButton->runAction(moveTo);
+
+}
+void HelloWorld::EndGame()
+{
+	auto winSize = Director::getInstance()->getVisibleSize();
+
+	isGameLive = false;
+
+	gameOverLabel->setPosition(500, 500);
+
+	//Bring start button back on screen.
+	auto moveTo = MoveTo::create(0.5, Vec2(winSize.width*0.5f, winSize.height*0.5f)); 
+	playButton->runAction(moveTo);
+
 }
