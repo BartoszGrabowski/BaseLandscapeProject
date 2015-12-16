@@ -14,11 +14,11 @@
         <LuaEncryptSign Value="" />
         <Android_PackageName Value="org.cocos.BaseLandscapeProject" />
         <AndroidkeyStore Value="" />
-        <AndroidVersion Value="" />
+        <AndroidVersion Value="android-20" />
         <iOS_Target Value="BaseLandscapeProject-mobile" />
         <iOS_BundleID Value="" />
         <Platform Value="None" />
-        <RunPlatform Value="Windows" />
+        <RunPlatform Value="Android" />
         <FrameworkVersion Value="cocos2d-x-3.8" />
         <IsDebugKeystore Value="True" />
         <EnableSourceMap Value="False" />
@@ -27,10 +27,7 @@
     </Item>
     <Item Key="TabsParamsKey">
       <Value ctype="TabsInfo">
-        <OpenedDocuments>
-          <FilePathData Path="MainScene.csd" />
-        </OpenedDocuments>
-        <ActiveDocument Path="MainScene.csd" />
+        <ActiveDocument />
       </Value>
     </Item>
   </Properties>

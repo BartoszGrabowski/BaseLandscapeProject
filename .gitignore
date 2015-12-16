@@ -47,3 +47,6 @@ out/
 *.tar
 *.tgz
 *.gtgz
+proj.win32/BaseLandscapeProject.sdf
+*.sdf
+proj.win32/.vs/BaseLandscapeProject/v14/.suo
